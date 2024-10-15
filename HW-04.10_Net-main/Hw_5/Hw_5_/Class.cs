@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using static System.Console;
 
 namespace Hw_5_CustomDate
@@ -11,78 +11,82 @@ namespace Hw_5_CustomDate
 
         public int Day
         {
-            get { return day; }
+            get => day;
             set
             {
                 if (IsValidDate(value, month, year))
+                {
                     day = value;
+                    WriteLine($"Day set to {day:D2}.");
+                }
                 else
-                    WriteLine("Недопустимое значение для дня.");
+                {
+                    WriteLine($"Invalid day: {value} for month {month:D2}, year {year}.");
+                }
             }
         }
 
         public int Month
         {
-            get { return month; }
+            get => month;
             set
             {
                 if (IsValidDate(day, value, year))
+                {
                     month = value;
+                    WriteLine($"Month set to {month:D2}.");
+                }
                 else
-                    WriteLine("Недопустимое значение для месяца.");
+                {
+                    WriteLine($"Invalid month: {value} for day {day:D2}, year {year}.");
+                }
             }
         }
 
         public int Year
         {
-            get { return year; }
+            get => year;
             set
             {
                 if (IsValidDate(day, month, value))
+                {
                     year = value;
+                    WriteLine($"Year set to {year}.");
+                }
                 else
-                    WriteLine("Недопустимое значение для года.");
+                {
+                    WriteLine($"Invalid year: {value}. Please check again.");
+                }
             }
         }
 
-        public string Day_Of_Week
+        public string DayOfWeek
         {
             get
             {
-                int d = day;
-                int m = month;
-                int y = year;
+                int adjustedMonth = month < 3 ? month + 12 : month;
+                int adjustedYear = month < 3 ? year - 1 : year;
 
-                if (m < 3)
+                int h = (day + (13 * (adjustedMonth + 1)) / 5 + adjustedYear % 100 + 
+                         (adjustedYear % 100) / 4 + (adjustedYear / 100) / 4 - 2 * (adjustedYear / 100)) % 7;
+
+                return h switch
                 {
-                    m += 12;
-                    y -= 1;
-                }
-
-                int K = y % 100;
-                int J = y / 100;
-                int h = (d + (13 * (m + 1)) / 5 + K + (K / 4) + (J / 4) + 5 * J) % 7;
-                int dayOfWeek = ((h + 5) % 7) + 1;
-
-                switch (dayOfWeek)
-                {
-                    case 1: return "Понедельник";
-                    case 2: return "Вторник";
-                    case 3: return "Среда";
-                    case 4: return "Четверг";
-                    case 5: return "Пятница";
-                    case 6: return "Суббота";
-                    case 7: return "Воскресенье";
-                    default: return "Неизвестно";
-                }
+                    0 => "Saturday",
+                    1 => "Sunday",
+                    2 => "Monday",
+                    3 => "Tuesday",
+                    4 => "Wednesday",
+                    5 => "Thursday",
+                    6 => "Friday",
+                    _ => "Unknown day"
+                };
             }
         }
 
-        public Date()
+        public Date() : this(1, 1, 2000)
         {
-            day = 1;
-            month = 1;
-            year = 2000;
+            WriteLine("Default date set to 01.01.2000.");
         }
 
         public Date(int day, int month, int year)
@@ -92,72 +96,42 @@ namespace Hw_5_CustomDate
                 this.day = day;
                 this.month = month;
                 this.year = year;
+                WriteLine($"New date: {day:D2}.{month:D2}.{year}");
             }
             else
             {
-                WriteLine("Недопустимая дата. Установлена дата по умолчанию.");
                 this.day = 1;
                 this.month = 1;
                 this.year = 2000;
+                WriteLine("Invalid date. Reset to default: 01.01.2000.");
             }
         }
 
         private bool IsValidDate(int day, int month, int year)
         {
-            if (year < 1 || month < 1 || month > 12)
-                return false;
+            if (year < 1 || month < 1 || month > 12) return false;
 
-            int[] daysInMonth =
-            {
-                31, IsLeapYear(year) ? 29 : 28, 31, 30, 31, 30,
-                31, 31, 30, 31, 30, 31
-            };
+            int[] daysInMonth = { 31, IsLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-            if (day < 1 || day > daysInMonth[month - 1])
-                return false;
-
-            return true;
+            return day >= 1 && day <= daysInMonth[month - 1];
         }
 
-        private bool IsLeapYear(int year)
-        {
-            if (year % 400 == 0)
-                return true;
-            else if (year % 100 == 0)
-                return false;
-            else if (year % 4 == 0)
-                return true;
-            else
-                return false;
-        }
+        private bool IsLeapYear(int year) =>
+            (year % 400 == 0) || (year % 100 != 0 && year % 4 == 0);
 
-        public int DifferenceInDays(Date other)
-        {
-            int totalDays1 = CountDays(this);
-            int totalDays2 = CountDays(other);
-
-            return Math.Abs(totalDays1 - totalDays2);
-        }
+        public int DifferenceInDays(Date other) =>
+            Math.Abs(CountDays(this) - CountDays(other));
 
         private int CountDays(Date date)
         {
             int days = date.day;
-
             for (int y = 1; y < date.year; y++)
-            {
                 days += IsLeapYear(y) ? 366 : 365;
-            }
 
-            int[] daysInMonth =
-            {
-                31, IsLeapYear(date.year) ? 29 : 28, 31, 30, 31, 30,
-                31, 31, 30, 31, 30, 31
-            };
+            int[] daysInMonth = { 31, IsLeapYear(date.year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
             for (int m = 1; m < date.month; m++)
-            {
                 days += daysInMonth[m - 1];
-            }
 
             return days;
         }
@@ -165,8 +139,8 @@ namespace Hw_5_CustomDate
         public void AddDays(int daysToAdd)
         {
             int totalDays = CountDays(this) + daysToAdd;
-
             int newYear = 1;
+
             while (true)
             {
                 int daysInYear = IsLeapYear(newYear) ? 366 : 365;
@@ -175,48 +149,28 @@ namespace Hw_5_CustomDate
                     totalDays -= daysInYear;
                     newYear++;
                 }
-                else
-                {
-                    break;
-                }
+                else break;
             }
 
-            int[] daysInMonth =
-            {
-                31, IsLeapYear(newYear) ? 29 : 28, 31, 30, 31, 30,
-                31, 31, 30, 31, 30, 31
-            };
+            int[] daysInMonth = { 31, IsLeapYear(newYear) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
             int newMonth = 1;
-            while (true)
+
+            while (totalDays > daysInMonth[newMonth - 1])
             {
-                if (totalDays > daysInMonth[newMonth - 1])
-                {
-                    totalDays -= daysInMonth[newMonth - 1];
-                    newMonth++;
-                }
-                else
-                {
-                    break;
-                }
+                totalDays -= daysInMonth[newMonth - 1];
+                newMonth++;
             }
 
             day = totalDays;
             month = newMonth;
             year = newYear;
+            WriteLine($"New date after adding {daysToAdd} days: {day:D2}.{month:D2}.{year}");
         }
 
-        public void PrintDate()
-        {
-            WriteLine($"{day:D2}.{month:D2}.{year}");
-        }
+        public void PrintDate() => WriteLine($"Current date: {day:D2}.{month:D2}.{year}");
 
-        // Перегрузка оператора "-"
-        public static int operator -(Date d1, Date d2)
-        {
-            return d1.DifferenceInDays(d2);
-        }
+        public static int operator -(Date d1, Date d2) => d1.DifferenceInDays(d2);
 
-        // Перегрузка оператора "+"
         public static Date operator +(Date d, int days)
         {
             Date result = new(d.day, d.month, d.year);
@@ -224,40 +178,20 @@ namespace Hw_5_CustomDate
             return result;
         }
 
-        // Перегрузка оператора "++"
-        public static Date operator ++(Date d)
-        {
-            return d + 1;
-        }
+        public static Date operator ++(Date d) => d + 1;
+        public static Date operator --(Date d) => d + (-1);
 
-        // Перегрузка оператора "--"
-        public static Date operator --(Date d)
-        {
-            return d + (-1);
-        }
+        public static bool operator >(Date d1, Date d2) => d1.DifferenceInDays(d2) > 0;
+        public static bool operator <(Date d1, Date d2) => d1.DifferenceInDays(d2) < 0;
 
-        // Перегрузка оператора ">"
-        public static bool operator >(Date d1, Date d2)
-        {
-            return d1.DifferenceInDays(d2) > 0;
-        }
+        public static bool operator ==(Date d1, Date d2) =>
+            d1.day == d2.day && d1.month == d2.month && d1.year == d2.year;
 
-        // Перегрузка оператора "<"
-        public static bool operator <(Date d1, Date d2)
-        {
-            return d1.DifferenceInDays(d2) < 0;
-        }
+        public static bool operator !=(Date d1, Date d2) => !(d1 == d2);
 
-        // Перегрузка оператора "=="
-        public static bool operator ==(Date d1, Date d2)
-        {
-            return (d1.day == d2.day && d1.month == d2.month && d1.year == d2.year);
-        }
+        public override bool Equals(object obj) =>
+            obj is Date date && this == date;
 
-        // Перегрузка оператора "!="
-        public static bool operator !=(Date d1, Date d2)
-        {
-            return !(d1 == d2);
-        }
+        public override int GetHashCode() => HashCode.Combine(day, month, year);
     }
 }
