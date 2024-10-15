@@ -1,20 +1,18 @@
-﻿using System;
+using System;
 using static System.Console;
 using Hw_5_CustomDate;
 
-class Hw_5_Clien
+class Hw_5_Client
 {
     static void Main()
     {
         try
         {
-            // Работа с датой по умолчанию
             Date date1 = new Date();
             WriteLine("Дата по умолчанию:");
             date1.PrintDate();
             WriteLine($"День недели: {date1.Day_Of_Week}");
 
-            // Ввод второй даты
             WriteLine("\nВведите дату (день месяц год) вводить отдельно:");
             int day = int.Parse(ReadLine());
             int month = int.Parse(ReadLine());
@@ -25,31 +23,26 @@ class Hw_5_Clien
             date2.PrintDate();
             WriteLine($"День недели: {date2.Day_Of_Week}");
 
-            // Разница в днях между двумя датами
             int difference = date1 - date2;
             WriteLine($"\nРазница между датами в днях: {difference}");
 
-            // Добавление дней к дате
             WriteLine("\nВведите количество дней для изменения даты:");
             int daysToAdd = int.Parse(ReadLine());
-            date2 = date2 + daysToAdd; // Использование перегруженного оператора "+"
+            date2 += daysToAdd;
             WriteLine($"Новая дата после изменения на {daysToAdd} дней:");
             date2.PrintDate();
             WriteLine($"День недели: {date2.Day_Of_Week}");
 
-            // Использование оператора "++"
             WriteLine("\nИспользование оператора '++' для добавления одного дня к дате:");
             date2++;
             date2.PrintDate();
             WriteLine($"День недели: {date2.Day_Of_Week}");
 
-            // Использование оператора "--"
             WriteLine("\nИспользование оператора '--' для вычитания одного дня из даты:");
             date2--;
             date2.PrintDate();
             WriteLine($"День недели: {date2.Day_Of_Week}");
 
-            // Сравнение дат
             WriteLine("\nСравнение дат:");
             Date date3 = new Date(15, 8, 2025);
             WriteLine("Дата 1:");
@@ -84,11 +77,11 @@ class Hw_5_Clien
 
             if (date1 != date2)
             {
-                WriteLine("Дата 1 не равна Дате 3");
+                WriteLine("Дата 1 не равна Дате 2");
             }
             else
             {
-                WriteLine("Дата 1 равна Дате 3");
+                WriteLine("Дата 1 равна Дате 2");
             }
         }
         catch (Exception ex)
